@@ -4,12 +4,11 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.*;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
-import java.lang.Comparable.*;
+import java.util.Map.Entry;
 
 public class PhoneBook {
     public static void main(String[] args) throws IOException {
@@ -63,25 +62,42 @@ public class PhoneBook {
                 // System.out.println(elem);
                 StringBuilder variable = new StringBuilder(elem);
                 strArr[i++] = variable;
-
             }
             List<StringBuilder> detailsrecord = Arrays.asList(strArr);
             // System.out.println(detailsrecord);
             record.add(detailsrecord);
-
             // System.out.printf(" %s \n", str);
         }
+        HashMap<String,String> map1 = new HashMap<>();
         StringBuilder input = new StringBuilder("Другая ФАМИЛИЯ");
         StringBuilder search = new StringBuilder("Перелыгин");
-        for (List<StringBuilder> list : record) {
-          
-            if (search.toString().equals(list.get(0).toString())) {
-                System.out.println(list + " " + search);
-                list.set(0, input);
-                System.out.println(list + " " + input);
+      
+        for (int i = 0; i < record.size(); i++) {
+            map1.put(record.get(i).get(0).toString(), record.get(i).get(3).toString());
+            if (search.toString().equals(record.get(i).get(0).toString())) {
 
+                System.out.println(record.get(i) + " " + search);
+
+
+                record.get(i).set(0, input);
+                System.out.println(record.get(i) + " " + input);
             }
         }
+        System.out.println(record);
+        System.out.println();
+        // System.out.println(map1);
+
+        for (Entry<String, String> i : map1.entrySet()) {
+            System.out.println(i + " ");
+            
+        }
+            
+        
         br.close();
     }
+    public static void hashMethod() {
+        HashMap<Integer,String> map1 = new HashMap<>();
+        
+    }
+
 }
