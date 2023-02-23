@@ -4,13 +4,19 @@ import java.util.Scanner;
 public class start {
 
     public static void main(String[] args)  {
+        // Scanner request = new Scanner(System.in);
+        int a = 0;
         Scanner request = new Scanner(System.in);
-        int a = 0;    
+        String test = "";
+        do {
             try {
                 menu();
-                System.out.println();
                 
-                a = request.nextInt();
+                // request.nextLine();
+                test = request.next();// a = request.nextInt();
+                // System.out.println();
+                
+               a = Integer.valueOf(test);
                 switch (a) {
                     case 1:
                         treugolandfactorial.main(args);
@@ -30,15 +36,18 @@ public class start {
                         break;
                     default:
                         System.out.println("Выход");
-                        request.close();
-                        System.exit(0);
+                        // request.close();
+                        // System.exit(0);
+                        break;
                 }
+                request.reset();
             } catch (Exception ex) {
                 System.out.println("Неправильный ввод, попробуйте еще раз");
 
             }
-            request.close();
-        
+            // test = request.nextLine();
+            // request.close();
+         } while (true);
 
     }
 
@@ -56,6 +65,6 @@ public class start {
         String str5 = "5. Выход";
         System.out.print("\033[H\033[J");
         System.out.printf(" %s %s %s %s %s \n", str1, str2, str3, str4, str5);
-               
+        System.out.println();    
     }
 }
