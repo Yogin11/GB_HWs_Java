@@ -148,7 +148,7 @@ public class PhoneBook {
             ArrayList<StringBuilder> phones = new ArrayList<StringBuilder>();
             for (String elem : elements) {
                 if (i == 4) {
-                    phones.add(elem)  //// ТУТ
+                    phones.add(elem);
                 }else {
                 StringBuilder variable = new StringBuilder(elem);
                 strArr[i++] = variable;
