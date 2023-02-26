@@ -2,9 +2,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class RecordsBook {
-    List<List<String>> recordbook;
+    List<List<StringBuilder>> recordbook;
     
-    public RecordsBook(List<List<String>> recordbook) {
+    public RecordsBook(List<List<StringBuilder>> recordbook) {
         this.recordbook = recordbook;
 
         // record = new ArrayList<>();
@@ -12,14 +12,14 @@ public class RecordsBook {
 
   
 
-    public void recordAdd(List<String> var){
+    public void recordAdd(List<StringBuilder> var){
         this.recordbook.add(var);
         // this.recordbook.add() ;
     }
 
     public void printBook() {
         // System.out.println(this.recordbook);
-        for (List<String> list : this.recordbook) {
+        for (List<StringBuilder> list : this.recordbook) {
             System.out.println(" ВОТ ТУТ printBOOK" + list);
 
         }

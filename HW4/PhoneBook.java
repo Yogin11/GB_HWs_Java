@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.nio.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
@@ -23,65 +24,86 @@ public class PhoneBook {
          * - находить по логину телефон/список телефонов
          */
         // RecordsBook telephoneBook = new RecordsBook(null);
-        int a = 0;
         Scanner request = new Scanner(System.in);
+        HashMap<String, String[]> telbook = fReader();
+        // while (true) {
+        int a = 0;
+        boolean isExit = false;
         // test = request.nextLine();
-        List<List<StringBuilder>> telbook = fReader();
+        System.out.print("\033[H\033[J");
+        while (!isExit) {
 
-        menu();
-        // System.out.print("\033[H\033[J");
-        try {
-            a = request.nextInt();
-            // HashMap var = hashMethod(fReader());
-            System.out.println();
-            // choose(a, request, var);
-            choose(a, request, telbook);
+            menu();
+            // System.out.print("\033[H\033[J");
+            try {
+                String s = request.nextLine();
+                isExit = s.equals("exit");
+                if (isExit) {
+                    break;
+                }
+                a = Integer.parseInt(s);
 
-            // printAll(fReader());
-            request.close();
-        } catch (IOException e) {
-            System.out.println("Неправильный ввод, попробуйте еще раз");
-            System.out.println(e.getMessage());
+                System.out.println();
+                choose(a, request, telbook);
+                // request.close();
+            } catch (IOException e) {
+                System.out.println("Неправильный ввод, попробуйте еще раз");
+                System.out.println(e.getMessage());
+            } finally {
+                System.out.println();
+            }
         }
+        request.close();
     }
 
     public static void menu() {
-        System.out.printf("Выберите пункт: \n");
+        System.out.println("Выберите пункт: ");
         String str1 = "1. Вывести весь список логин/телефон \n";
-        String str11 = "11. Вывести весь тел. справочник \n";
+
         String str2 = "2. Добавить телефон \n"; // сначала поиск по логину
         String str3 = "3. Найти телефон/список телефонов по логину \n"; // reg expressions
         String str4 = "4. Удалить телефон \n"; // сначала поиск по логину
         String str5 = "5. Выход";
-        // System.out.print("\033[H\033[J");
-        System.out.printf(" %s %s %s %s %s \n", str1, str11, str2, str3, str4, str5);
+
+        System.out.printf(" %s %s %s %s %s \n", str1, str2, str3, str4, str5);
         System.out.println();
     }
 
-    public static void choose(int a, Scanner request, List<List<StringBuilder>> telbook) throws IOException {
+    public static void choose(int a, Scanner request, HashMap<String, String[]> telbook) throws IOException {
+        boolean update = false;
+        String var = "";
         switch (a) {
             case 1:
-                printLogTel(hashMethod(telbook));
+                // 1. Вывести весь список логин/телефон
+                printLogTel(telbook);
                 break;
             case 11:
-                printAll(telbook);
+                // printAll(telbook);
                 break;
             case 2:
-                searchSubsHash(hashMethod(telbook));
-                // addNumber();
-
+                // 2. Добавить телефон
+                // searchSubsHash(telbook);
+                update = false;
+                var = foundMenu(searchSubsHash(telbook, request), telbook, update, request);
+                addNumber(var, telbook, request);
                 break;
             case 3:
+
                 // searchSubsAll(fReader());
-                searchSubsHash(hashMethod(telbook));
-                System.out.println("Выберите номер записи");
-                // int choice = request.nextInt();
-                int choice = Integer.parseInt("2");
+                update = false;
+                foundMenu(searchSubsHash(telbook, request), telbook, update, request);
 
                 break;
             case 4:
+                // УДАЛИТЬ ТЕЛЕФОН
+                update = false;
+                var = foundMenu(searchSubsHash(telbook, request), telbook, update, request);
+
+                removeNumber(var, telbook, request);
+
                 break;
             case 5:
+                printAll(telbook);
                 request.close();
                 System.exit(0);
                 break;
@@ -91,6 +113,86 @@ public class PhoneBook {
                 System.exit(0);
                 break;
         }
+    }
+
+    public static void addNumber(String var, HashMap<String, String[]> telbook, Scanner request) {
+
+        // String[] arr = var;
+        System.out.printf("у пользователя с логином %s имеются след. телефоны: \n", var);
+
+        List<String> listOfStrings = new ArrayList<String>();
+        Collections.addAll(listOfStrings, telbook.get(var));
+        int counter = 1;
+        for (int i = 3; i < listOfStrings.size(); i++) {
+            System.out.println(counter + " " + listOfStrings.get(i));
+            counter++;
+        }
+        // System.out.println(listOfStrings);
+        // String newnum = "+798568652323";
+        System.out.println("Введите номер телефона: ");
+
+        String newnum = input(request);
+
+        listOfStrings.add(newnum);
+        System.out.println(listOfStrings);
+        // String[] per = (String[]) listOfStrings.toArray();
+        String[] per = listOfStrings.toArray(new String[0]);
+
+        telbook.put(var, per);
+        System.out.println("Номер добавлен ");
+        // printLogTel(telbook);
+
+    }
+
+    public static void removeNumber(String var, HashMap<String, String[]> telbook, Scanner request) {
+        System.out.printf("у пользователя с логином %s имеются след. телефоны: \n", var);
+
+        List<String> listOfStrings = new ArrayList<String>();
+        Collections.addAll(listOfStrings, telbook.get(var));
+        int counter = 1;
+        for (int i = 3; i < listOfStrings.size(); i++) {
+            System.out.println(counter + " " + listOfStrings.get(i));
+            counter++;
+        }
+
+        // String choice = "1";
+        System.out.println("Какой номер записи удалить? ");
+        String choice = input(request);
+
+        listOfStrings.remove(Integer.parseInt(choice) + 2);
+        // System.out.println(listOfStrings);
+        String[] per = listOfStrings.toArray(new String[0]);
+        telbook.put(var, per);
+        // printLogTel(telbook);
+        System.out.println("Номер удален ");
+    }
+
+    public static String foundMenu(HashMap<String, String> found, HashMap<String, String[]> telbook, Boolean update,
+            Scanner request) {
+
+        if (!update) {
+            String choice = input(request);
+            return found.get(choice);
+        } else {
+            System.out.println("Выберите номер записи");
+        }
+        return null;
+    }
+
+    public static String input(Scanner request) {
+        String a = " ";
+        a = request.nextLine();
+        System.out.println();
+        return a;
+    }
+
+    public static void printRecord(String strLog, String[] data) {
+        String stroka = "";
+        for (String i : data) {
+            stroka += i + " ";
+        }
+        System.out.println(String.format("%-20s %10s", strLog, stroka));
+        System.out.println();
     }
 
     public static void searchSubsAll(List<List<StringBuilder>> record) {
@@ -107,16 +209,22 @@ public class PhoneBook {
         }
     }
 
-    public static void searchSubsHash(HashMap<String, String[]> map1) {
-        String podstr = ".ru";
-        StringBuilder search = new StringBuilder("\\.*" + podstr + "\\.*");
-        Pattern patt = Pattern.compile(search.toString());
+    public static HashMap<String, String> searchSubsHash(HashMap<String, String[]> map, Scanner request) {
+        System.out.println("Введите символы из логина");
+
+        // String podstr = ".com";
+        String podstr = input(request);
+        String findString = new String("\\.*" + podstr + "\\.*");
+        Pattern patt = Pattern.compile(findString);
+        HashMap<String, String> foundlist = new HashMap<>();
+
         boolean found = false;
+        System.out.println("Найдены записи: ");
         System.out.println("----------------------------------------------------------------");
         System.out.println(String.format("   %-30s %10s", "Логин", "|      Телефон"));
         System.out.println("----------------------------------------------------------------");
         int numberMenu = 0;
-        for (var i : map1.entrySet()) {
+        for (Entry<String, String[]> i : map.entrySet()) {
             Matcher match = patt.matcher(i.getKey());
             String stroka = "";
             while (match.find()) {
@@ -125,45 +233,47 @@ public class PhoneBook {
                     stroka += j > 0 ? ", " + i.getValue()[j] : i.getValue()[j];
                 }
                 numberMenu++;
-                System.out.println(String.format("%d  %-30s |%10s", numberMenu, i.getKey(), stroka));
+                foundlist.put(Integer.toString(numberMenu), i.getKey());
+                System.out.println(String.format("%d %-30s |%10s", numberMenu, i.getKey(), stroka));
             }
         }
         if (!found) {
             System.out.println("Логин с таким набором символов не найден");
         }
-
+        // System.out.println(foundlist);
+        return foundlist;
     }
 
-    public static List<List<StringBuilder>> fReader() throws IOException {
+    public static HashMap<String, String[]> fReader() throws IOException {
         String filename = "tel.txt";
         BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(filename), "UTF-8"));
         String str;
         List<List<StringBuilder>> record = new ArrayList<>();
         RecordsBook telephoneBook = new RecordsBook(new ArrayList<>());
 
+        HashMap<String, String[]> map2 = new HashMap<>();
         while ((str = br.readLine()) != null) {
             String[] elements = str.split(",");
+            int j = 0;
+            String[] telvalues = new String[elements.length - 1];
+            for (int i = 1; i < elements.length; i++) {
+                telvalues[j++] = elements[i];
+
+            }
+            map2.put(elements[0], telvalues);
+            // printLogTel(map2);
             StringBuilder[] strArr = new StringBuilder[elements.length];
             int i = 0;
             ArrayList<StringBuilder> phones = new ArrayList<StringBuilder>();
             for (String elem : elements) {
-                if (i == 4) {
-                    phones.add(elem)  //// ТУТ
-                }else {
                 StringBuilder variable = new StringBuilder(elem);
                 strArr[i++] = variable;
-                }
             }
-            PhoneRecord zapis = new PhoneRecord(strArr[0], strArr[1], strArr[2], strArr[3], strArr[4]);
-            // zapis.toOneRecord();
-            telephoneBook.recordAdd(zapis.toOneRecord());
-            // zapis.oneRecPrint();
             List<StringBuilder> detailsrecord = Arrays.asList(strArr);
             record.add(detailsrecord);
         }
-        telephoneBook.printBook();
         br.close();
-        return record;
+        return map2;
 
     }
 
@@ -184,8 +294,8 @@ public class PhoneBook {
         return map1;
     }
 
-    public static void printLogTel(HashMap<String, String[]> map1) {
-        for (var i : map1.entrySet()) {
+    public static void printLogTel(HashMap<String, String[]> map) {
+        for (Entry<String, String[]> i : map.entrySet()) {
             String stroka = "";
             for (int j = 0; j < i.getValue().length; j++) {
                 stroka += j > 0 ? ", " + i.getValue()[j] : i.getValue()[j];
@@ -195,30 +305,59 @@ public class PhoneBook {
         }
     }
 
-    public static void printAll(List<List<StringBuilder>> record) {
+    // public static void printAll(List<List<StringBuilder>> record) {
+    public static void printAll(HashMap<String, String[]> records) {
+
         HashMap<Integer, Integer> maxLen = new HashMap<>();
         int temp = 0;
-        for (int i = 0; i < record.size(); i++) {
-            for (int j = 0; j < record.get(i).size(); j++) {
-                if (i == 0) {
-                    maxLen.put(j, record.get(i).get(j).length() + 3);
+       
+
+        for (Entry<String, String[]> items : records.entrySet()) {
+            if (temp == 0) {
+                maxLen.put(0, items.getKey().length() + 3);
+                for (int j = 0; j < items.getValue().length; j++) {
+                    maxLen.put(j + 1, items.getValue()[j].length() + 3);
                 }
-                if (maxLen.get(j) < record.get(i).get(j).length()) {
-                    maxLen.put(j, record.get(i).get(j).length() + 2);
+            } 
+            else {
+            // TOFOFOOOOFOFOFOF
+                    
+                if (maxLen.get(0) < items.getKey().length()) {
+                    maxLen.put(0, items.getKey().length() + 2);}
+                for (int j = 0; j < items.getValue().length; j++) {
+                    if (maxLen.get(j+1) < items.getValue()[j].length()) {
+                        maxLen.put(j+1, items.getValue()[j].length() + 2);
+                    }
                 }
-            }
+                }
+             
+            temp++;
+        }
+        for (Entry<Integer, Integer> i : maxLen.entrySet()) {
+            System.out.println(String.format("%-30s %10s", i.getKey(), i.getValue()));
         }
 
-        for (int i = 0; i < record.size(); i++) {
-            int f = 0;
-            String st = "|";
-            for (StringBuilder entry : record.get(i)) {
-                st = "%-" + maxLen.get(f++) + "s" + "| ";
-                // System.out.println(st);
-                System.out.printf(st, entry.toString());
-            }
-            System.out.println("");
-        }
+        // for (int i = 0; i < record.size(); i++) {
+        //     for (int j = 0; j < record.get(i).size(); j++) {
+        //         if (i == 0) {
+        //             maxLen.put(j, record.get(i).get(j).length() + 3);
+        //         }
+        //         if (maxLen.get(j) < record.get(i).get(j).length()) {
+        //             maxLen.put(j, record.get(i).get(j).length() + 2);
+        //         }
+        //     }
+        // }
+
+        // for (int i = 0; i < record.size(); i++) {
+        //     int f = 0;
+        //     String st = "|";
+        //     for (StringBuilder entry : record.get(i)) {
+        //         st = "%-" + maxLen.get(f++) + "s" + "| ";
+        //         // System.out.println(st);
+        //         System.out.printf(st, entry.toString());
+        //     }
+        //     System.out.println("");
+        // }
 
     }
 }
@@ -227,6 +366,8 @@ class PhoneRecord {
 
     int num;
     int counter = 1;
+    String logs;
+    String[] data;
     StringBuilder login;
     StringBuilder familyname;
     StringBuilder name;
@@ -234,30 +375,35 @@ class PhoneRecord {
     StringBuilder telephone;
     List<StringBuilder> oneRecord;
 
-    PhoneRecord(StringBuilder login, StringBuilder familyname, StringBuilder name, StringBuilder middlename,
-            StringBuilder telephone) {
-        num = counter++;
-        this.login = login;
-        this.familyname = familyname;
-        this.name = name;
-        this.middlename = middlename;
-        this.telephone = telephone;
+    PhoneRecord(String logs, String data[]) {
+        this.logs = logs;
+        this.data = data;
+
     }
 
-    public List<StringBuilder> toOneRecord() {
-        this.oneRecord = new ArrayList<StringBuilder>();
-        this.oneRecord.add(this.login);
-        this.oneRecord.add(this.familyname);
-        this.oneRecord.add(this.name);
-        this.oneRecord.add(this.middlename);
-        this.oneRecord.add(this.telephone);
-        return oneRecord;
-    }
+    // PhoneRecord(StringBuilder login, StringBuilder familyname, StringBuilder
+    // name, StringBuilder middlename,
+    // StringBuilder telephone) {
+    // num = counter++;
+    // this.login = login;
+    // this.familyname = familyname;
+    // this.name = name;
+    // this.middlename = middlename;
+    // this.telephone = telephone;
+    // }
+
+    // public List<StringBuilder> toOneRecord() {
+    // this.oneRecord = new ArrayList<StringBuilder>();
+    // this.oneRecord.add(this.login);
+    // this.oneRecord.add(this.familyname);
+    // this.oneRecord.add(this.name);
+    // this.oneRecord.add(this.middlename);
+    // this.oneRecord.add(this.telephone);
+    // return oneRecord;
+    // }
 
     public void oneRecPrint() {
         System.out.println(" ВОТ ТУТ ПЕЧАТАЕТСЯ" + this.oneRecord);
     }
-
-
 
 }
