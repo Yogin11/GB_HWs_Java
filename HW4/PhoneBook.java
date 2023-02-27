@@ -1,11 +1,5 @@
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-// import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.*;
 import java.util.ArrayList;
-// import java.util.*;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -64,11 +58,9 @@ public class PhoneBook {
             case 1:
                 // 1. Вывести весь список логин/телефон
                 printAll(telbook);
-                // printLogTel(telbook);
                 break;
             case 2:
                 // Найти телефон/список телефонов по логину
-                // searchSubsAll(fReader());
                 update = false;
                 HashMap<String, String> temp = searchSubsHash(telbook, request);
                 foundMenu(temp, telbook, update, request);
@@ -77,7 +69,6 @@ public class PhoneBook {
                 // 3. Добавить телефон
                 update = true;
                 temp = searchSubsHash(telbook, request);
-                // System.out.println(!temp.isEmpty());
                 if (!temp.isEmpty()) {
                     var = foundMenu(temp, telbook, update, request);
                     addNumber(var, telbook, request);
@@ -97,6 +88,7 @@ public class PhoneBook {
                 fWriter(telbook, request);
                 break;   
             case 6:
+            //выход
                 request.close();
                 System.exit(0);
                 break;
@@ -127,11 +119,9 @@ public class PhoneBook {
     }
 
     public static void addNumber(String var, HashMap<String, String[]> telbook, Scanner request) {
-        // String[] arr = var;
         List<String> listOfStrings = new ArrayList<String>();
         Collections.addAll(listOfStrings, telbook.get(var));
         int counter = 1;
-        // System.out.println(listOfStrings);
         if (listOfStrings.size() > 3) {
             System.out.printf("у пользователя с логином %s имеются след. телефоны: \n", var);
             for (int i = 3; i < listOfStrings.size(); i++) {
@@ -142,31 +132,27 @@ public class PhoneBook {
         System.out.println("Введите номер телефона: ");
         String newnum = input(request);
         listOfStrings.add(newnum);
-        // System.out.println(listOfStrings);
         String[] per = listOfStrings.toArray(new String[0]);
         telbook.put(var, per);
         System.out.println("Номер добавлен ");
         sleeper();
-        // printLogTel(telbook);
     }
 
     public static void removeNumber(String var, HashMap<String, String[]> telbook, Scanner request) {
         System.out.printf("у пользователя с логином %s имеются след. телефоны: \n", var);
         List<String> listOfStrings = new ArrayList<String>();
         Collections.addAll(listOfStrings, telbook.get(var));
-        int counter = 0; //// kdsklfka;sfdka;ldskf;la'sdlfkdsa
+        int counter = 0; 
         for (int i = 3; i < listOfStrings.size(); i++) {
             counter++;
             System.out.println(counter + ".   " + listOfStrings.get(i));
         }
         String choice = "";
-
         if (counter > 1) {
             System.out.println("Какой номер записи удалить? ");
             choice = input(request);
         } else
             choice = "1";
-
         System.out.println("Подтвердите удаление. y/n");
         String confirm = input(request);
         if (confirm.contains("y")) {
@@ -203,9 +189,7 @@ public class PhoneBook {
         HashMap<String, String> foundlist = new HashMap<>();
         HashMap<String, String[]> flist = new HashMap<>();
         boolean found = false;
-
         int numberMenu = 0;
-
         for (Entry<String, String[]> i : map.entrySet()) {
             Matcher match = patt.matcher(i.getKey());
             while (match.find()) {
@@ -222,7 +206,6 @@ public class PhoneBook {
             System.out.println("Найдены записи: ");
         printAll(flist);
         return foundlist;
-        // System.out.println(foundlist);
     }
 
     static HashMap<String, String[]> fReader() throws IOException {
@@ -245,12 +228,8 @@ public class PhoneBook {
 
     public static void fWriter(HashMap<String, String[]> map, Scanner request) {
         try {
-
-            // String filename = "file.txt";
-
             System.out.println("Введите название файла. Чтобы перезаписать текущий файл данных введите tel.txt: ");
             String filename = input(request);
-
             BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(filename), "UTF-8"));
             for (Entry<String, String[]> i : map.entrySet()) {
                 bw.write(i.getKey());
@@ -304,7 +283,6 @@ public class PhoneBook {
             if (item == "№") {
                 continue;
             }
-
             st = "%-" + maxLen.getOrDefault(f++, 10) + "s" + "| ";
             System.out.printf(st, item);
         }
